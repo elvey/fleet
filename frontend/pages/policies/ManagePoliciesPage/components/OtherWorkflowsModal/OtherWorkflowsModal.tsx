@@ -378,6 +378,7 @@ const OtherWorkflowsModal = ({
           }}
           inactiveText="Disabled"
           activeText="Enabled"
+          autoFocus
         />
         <div
           className={`form ${baseClass}__policy-automations__${
