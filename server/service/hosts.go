@@ -187,6 +187,8 @@ func (svc *Service) ListHosts(ctx context.Context, opt fleet.HostListOptions) ([
 		opt.LowDiskSpaceFilter = nil
 		// the bootstrap package filter is premium-only
 		opt.MDMBootstrapPackageFilter = nil
+		// including vulnerability details on software is premium-only
+		opt.PopulateSoftwareVulnerabilityDetails = false
 	}
 
 	hosts, err := svc.ds.ListHosts(ctx, filter, opt)
@@ -210,7 +212,7 @@ func (svc *Service) ListHosts(ctx context.Context, opt fleet.HostListOptions) ([
 
 	if opt.PopulateSoftware {
 		for _, host := range hosts {
-			if err = svc.ds.LoadHostSoftware(ctx, host, premiumLicense); err != nil {
+			if err = svc.ds.LoadHostSoftware(ctx, host, opt.PopulateSoftwareVulnerabilityDetails); err != nil {
 				return nil, err
 			}
 		}
@@ -2639,7 +2641,7 @@ func (svc *Service) ListHostSoftware(ctx context.Context, hostID uint, opts flee
 	// always include metadata
 	opts.ListOptions.IncludeMetadata = true
 	opts.IncludeAvailableForInstall = includeAvailableForInstall || opts.SelfServiceOnly
-	opts.ExcludeVPPApps = !mdmEnrolled
+	opts.IsMDMEnrolled = mdmEnrolled
 
 	software, meta, err := svc.ds.ListHostSoftware(ctx, host, opts)
 	return software, meta, ctxerr.Wrap(ctx, err, "list host software")
