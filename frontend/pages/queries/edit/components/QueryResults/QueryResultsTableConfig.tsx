@@ -59,6 +59,16 @@ const generateColumnConfigsFromRows = <T extends Record<keyof T, unknown>>(
       },
       Filter: DefaultColumnFilter,
       disableSortBy: false,
+      // This grabs the column type from known types in the tables used by the query. This is where
+      // the problem with aliased column names comes in, since there is no pre-knowledge of the
+      // typing of such a column.
+      // Ideas:
+
+      // Parse the query for AS statements, use that info to deduce a type, if possible
+
+      // Since UI holds all results from a live query, can determine if all of them conform to a
+      // certain type, e.g., integer, and set sort type that way.
+
       sortType: getSortTypeFromColumnType(colName, tableColumns),
     };
   });
